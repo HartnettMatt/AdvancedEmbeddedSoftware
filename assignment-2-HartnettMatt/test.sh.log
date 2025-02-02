@@ -1,0 +1,170 @@
+Running test with user matt
+-- Generating ;/home/matt/Documents/Education/Graduate/AdvancedEmbeddedSoftware/assignment-1-HartnettMatt/assignment-autotest/test/assignment1/Test_hello_Runner.c;/home/matt/Documents/Education/Graduate/AdvancedEmbeddedSoftware/assignment-1-HartnettMatt/assignment-autotest/test/assignment1/Test_assignment_validate_Runner.c;/home/matt/Documents/Education/Graduate/AdvancedEmbeddedSoftware/assignment-1-HartnettMatt/assignment-autotest/../student-test/assignment1/Test_validate_username_Runner.c from test/assignment1/Test_hello.c;test/assignment1/Test_assignment_validate.c;../student-test/assignment1/Test_validate_username.c
+-- Building executable including ;/home/matt/Documents/Education/Graduate/AdvancedEmbeddedSoftware/assignment-1-HartnettMatt/assignment-autotest/test/assignment1/Test_hello_Runner.c;/home/matt/Documents/Education/Graduate/AdvancedEmbeddedSoftware/assignment-1-HartnettMatt/assignment-autotest/test/assignment1/Test_assignment_validate_Runner.c;/home/matt/Documents/Education/Graduate/AdvancedEmbeddedSoftware/assignment-1-HartnettMatt/assignment-autotest/../student-test/assignment1/Test_validate_username_Runner.c test/assignment1/Test_hello.c;test/assignment1/Test_assignment_validate.c;../student-test/assignment1/Test_validate_username.c and ../examples/autotest-validate/autotest-validate.c
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/matt/Documents/Education/Graduate/AdvancedEmbeddedSoftware/assignment-1-HartnettMatt/build
+[  8%] Building C object assignment-autotest/Unity/src/CMakeFiles/unity.dir/unity.c.o
+[ 16%] Linking C static library libunity.a
+[ 16%] Built target unity
+[ 25%] Generating /home/matt/Documents/Education/Graduate/AdvancedEmbeddedSoftware/assignment-1-HartnettMatt/assignment-autotest/test/assignment1/Test_hello_Runner.c, /home/matt/Documents/Education/Graduate/AdvancedEmbeddedSoftware/assignment-1-HartnettMatt/assignment-autotest/test/assignment1/Test_assignment_validate_Runner.c, /home/matt/Documents/Education/Graduate/AdvancedEmbeddedSoftware/assignment-1-HartnettMatt/student-test/assignment1/Test_validate_username_Runner.c, /home/matt/Documents/Education/Graduate/AdvancedEmbeddedSoftware/assignment-1-HartnettMatt/assignment-autotest/test/unity_runner.c
+Test files for auto dependency generation test/assignment1/Test_hello.c test/assignment1/Test_assignment_validate.c ../student-test/assignment1/Test_validate_username.c
+Autogenerating runner for test/assignment1/Test_hello.c
+Autogenerating runner for test/assignment1/Test_assignment_validate.c
+Autogenerating runner for ../student-test/assignment1/Test_validate_username.c
+Autogenerating test/unity_runner.c
+[ 33%] Building C object assignment-autotest/CMakeFiles/assignment-autotest.dir/test/assignment1/Test_hello.c.o
+[ 41%] Building C object assignment-autotest/CMakeFiles/assignment-autotest.dir/test/assignment1/Test_assignment_validate.c.o
+[ 50%] Building C object assignment-autotest/CMakeFiles/assignment-autotest.dir/__/student-test/assignment1/Test_validate_username.c.o
+[ 58%] Building C object assignment-autotest/CMakeFiles/assignment-autotest.dir/test/assignment1/Test_hello_Runner.c.o
+[ 66%] Building C object assignment-autotest/CMakeFiles/assignment-autotest.dir/test/assignment1/Test_assignment_validate_Runner.c.o
+[ 75%] Building C object assignment-autotest/CMakeFiles/assignment-autotest.dir/__/student-test/assignment1/Test_validate_username_Runner.c.o
+[ 83%] Building C object assignment-autotest/CMakeFiles/assignment-autotest.dir/__/examples/autotest-validate/autotest-validate.c.o
+[ 91%] Building C object assignment-autotest/CMakeFiles/assignment-autotest.dir/test/unity_runner.c.o
+[100%] Linking C executable assignment-autotest
+[100%] Built target assignment-autotest
+/home/matt/Documents/Education/Graduate/AdvancedEmbeddedSoftware/assignment-1-HartnettMatt/assignment-autotest/test/assignment1/Test_hello.c:6:test_hello:INFO: Hello!  Your unity setup is working!
+/home/matt/Documents/Education/Graduate/AdvancedEmbeddedSoftware/assignment-1-HartnettMatt/assignment-autotest/test/assignment1/Test_hello.c:4:test_hello:PASS
+
+-----------------------
+1 Tests 0 Failures 0 Ignored 
+OK
+/home/matt/Documents/Education/Graduate/AdvancedEmbeddedSoftware/assignment-1-HartnettMatt/assignment-autotest/test/assignment1/Test_assignment_validate.c:9:test_assignment_validate:PASS
+
+-----------------------
+1 Tests 0 Failures 0 Ignored 
+OK
+Read HartnettMatt from conf/username.txt
+/home/matt/Documents/Education/Graduate/AdvancedEmbeddedSoftware/assignment-1-HartnettMatt/assignment-autotest/../student-test/assignment1/Test_validate_username.c:15:test_validate_my_username:PASS
+
+-----------------------
+1 Tests 0 Failures 0 Ignored 
+OK
+Executing assignment test script
+~/Documents/Education/Graduate/AdvancedEmbeddedSoftware/assignment-1-HartnettMatt/assignment-autotest/test/assignment1 ~/Documents/Education/Graduate/AdvancedEmbeddedSoftware/assignment-1-HartnettMatt
+~/Documents/Education/Graduate/AdvancedEmbeddedSoftware/assignment-1-HartnettMatt/finder-app ~/Documents/Education/Graduate/AdvancedEmbeddedSoftware/assignment-1-HartnettMatt/assignment-autotest/test/assignment1 ~/Documents/Education/Graduate/AdvancedEmbeddedSoftware/assignment-1-HartnettMatt
+Error: Two arguments required: <writefile> <writestr>
+Error: Two arguments required: <writefile> <writestr>
+Using default value AELD_IS_FUN for string to write
+Using default value 10 for number of files to write
+Writing 10 files containing string AELD_IS_FUN to /tmp/aeld-data
+Successfully wrote to /tmp/aeld-data/HartnettMatt1.txt
+Successfully wrote to /tmp/aeld-data/HartnettMatt2.txt
+Successfully wrote to /tmp/aeld-data/HartnettMatt3.txt
+Successfully wrote to /tmp/aeld-data/HartnettMatt4.txt
+Successfully wrote to /tmp/aeld-data/HartnettMatt5.txt
+Successfully wrote to /tmp/aeld-data/HartnettMatt6.txt
+Successfully wrote to /tmp/aeld-data/HartnettMatt7.txt
+Successfully wrote to /tmp/aeld-data/HartnettMatt8.txt
+Successfully wrote to /tmp/aeld-data/HartnettMatt9.txt
+Successfully wrote to /tmp/aeld-data/HartnettMatt10.txt
+The number of files are 10 and the number of matching lines are 10
+success
+Writing 10 files containing string AELD_IS_FUN to /tmp/aeld-data/M85G5fOkfF9tIq6M11z5RZj298cFSN8J
+Successfully wrote to /tmp/aeld-data/M85G5fOkfF9tIq6M11z5RZj298cFSN8J/HartnettMatt1.txt
+Successfully wrote to /tmp/aeld-data/M85G5fOkfF9tIq6M11z5RZj298cFSN8J/HartnettMatt2.txt
+Successfully wrote to /tmp/aeld-data/M85G5fOkfF9tIq6M11z5RZj298cFSN8J/HartnettMatt3.txt
+Successfully wrote to /tmp/aeld-data/M85G5fOkfF9tIq6M11z5RZj298cFSN8J/HartnettMatt4.txt
+Successfully wrote to /tmp/aeld-data/M85G5fOkfF9tIq6M11z5RZj298cFSN8J/HartnettMatt5.txt
+Successfully wrote to /tmp/aeld-data/M85G5fOkfF9tIq6M11z5RZj298cFSN8J/HartnettMatt6.txt
+Successfully wrote to /tmp/aeld-data/M85G5fOkfF9tIq6M11z5RZj298cFSN8J/HartnettMatt7.txt
+Successfully wrote to /tmp/aeld-data/M85G5fOkfF9tIq6M11z5RZj298cFSN8J/HartnettMatt8.txt
+Successfully wrote to /tmp/aeld-data/M85G5fOkfF9tIq6M11z5RZj298cFSN8J/HartnettMatt9.txt
+Successfully wrote to /tmp/aeld-data/M85G5fOkfF9tIq6M11z5RZj298cFSN8J/HartnettMatt10.txt
+The number of files are 10 and the number of matching lines are 10
+success
+Test of assignment assignment1 complete with success
+Running test with user matt
+-- Generating ;/home/matt/Documents/Education/Graduate/AdvancedEmbeddedSoftware/assignment-1-HartnettMatt/assignment-autotest/test/assignment1/Test_hello_Runner.c;/home/matt/Documents/Education/Graduate/AdvancedEmbeddedSoftware/assignment-1-HartnettMatt/assignment-autotest/test/assignment1/Test_assignment_validate_Runner.c from test/assignment1/Test_hello.c;test/assignment1/Test_assignment_validate.c
+-- Building executable including ;/home/matt/Documents/Education/Graduate/AdvancedEmbeddedSoftware/assignment-1-HartnettMatt/assignment-autotest/test/assignment1/Test_hello_Runner.c;/home/matt/Documents/Education/Graduate/AdvancedEmbeddedSoftware/assignment-1-HartnettMatt/assignment-autotest/test/assignment1/Test_assignment_validate_Runner.c test/assignment1/Test_hello.c;test/assignment1/Test_assignment_validate.c and ../examples/autotest-validate/autotest-validate.c
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/matt/Documents/Education/Graduate/AdvancedEmbeddedSoftware/assignment-1-HartnettMatt/build
+[ 10%] Building C object assignment-autotest/Unity/src/CMakeFiles/unity.dir/unity.c.o
+[ 20%] Linking C static library libunity.a
+[ 20%] Built target unity
+[ 30%] Generating /home/matt/Documents/Education/Graduate/AdvancedEmbeddedSoftware/assignment-1-HartnettMatt/assignment-autotest/test/assignment1/Test_hello_Runner.c, /home/matt/Documents/Education/Graduate/AdvancedEmbeddedSoftware/assignment-1-HartnettMatt/assignment-autotest/test/assignment1/Test_assignment_validate_Runner.c, /home/matt/Documents/Education/Graduate/AdvancedEmbeddedSoftware/assignment-1-HartnettMatt/assignment-autotest/test/unity_runner.c
+Test files for auto dependency generation test/assignment1/Test_hello.c test/assignment1/Test_assignment_validate.c
+Autogenerating runner for test/assignment1/Test_hello.c
+Autogenerating runner for test/assignment1/Test_assignment_validate.c
+Autogenerating test/unity_runner.c
+[ 40%] Building C object assignment-autotest/CMakeFiles/assignment-autotest.dir/test/assignment1/Test_hello.c.o
+[ 50%] Building C object assignment-autotest/CMakeFiles/assignment-autotest.dir/test/assignment1/Test_assignment_validate.c.o
+[ 60%] Building C object assignment-autotest/CMakeFiles/assignment-autotest.dir/test/assignment1/Test_hello_Runner.c.o
+[ 70%] Building C object assignment-autotest/CMakeFiles/assignment-autotest.dir/test/assignment1/Test_assignment_validate_Runner.c.o
+[ 80%] Building C object assignment-autotest/CMakeFiles/assignment-autotest.dir/__/examples/autotest-validate/autotest-validate.c.o
+[ 90%] Building C object assignment-autotest/CMakeFiles/assignment-autotest.dir/test/unity_runner.c.o
+[100%] Linking C executable assignment-autotest
+[100%] Built target assignment-autotest
+/home/matt/Documents/Education/Graduate/AdvancedEmbeddedSoftware/assignment-1-HartnettMatt/assignment-autotest/test/assignment1/Test_hello.c:6:test_hello:INFO: Hello!  Your unity setup is working!
+/home/matt/Documents/Education/Graduate/AdvancedEmbeddedSoftware/assignment-1-HartnettMatt/assignment-autotest/test/assignment1/Test_hello.c:4:test_hello:PASS
+
+-----------------------
+1 Tests 0 Failures 0 Ignored 
+OK
+/home/matt/Documents/Education/Graduate/AdvancedEmbeddedSoftware/assignment-1-HartnettMatt/assignment-autotest/test/assignment1/Test_assignment_validate.c:9:test_assignment_validate:PASS
+
+-----------------------
+1 Tests 0 Failures 0 Ignored 
+OK
+Executing assignment test script
+~/Documents/Education/Graduate/AdvancedEmbeddedSoftware/assignment-1-HartnettMatt/assignment-autotest/test/assignment2 ~/Documents/Education/Graduate/AdvancedEmbeddedSoftware/assignment-1-HartnettMatt
+~/Documents/Education/Graduate/AdvancedEmbeddedSoftware/assignment-1-HartnettMatt/finder-app ~/Documents/Education/Graduate/AdvancedEmbeddedSoftware/assignment-1-HartnettMatt/assignment-autotest/test/assignment2 ~/Documents/Education/Graduate/AdvancedEmbeddedSoftware/assignment-1-HartnettMatt
+rm -f writer writer.o
+gcc -Wall -Werror -c writer.c -o writer.o
+gcc -Wall -Werror -o writer writer.o 
+Error: Invalid number of arguments.
+Error: Invalid number of arguments.
+Performing make clean
+rm -f writer writer.o
+Using default value AELD_IS_FUN for string to write
+Using default value 10 for number of files to write
+Writing 10 files containing string AELD_IS_FUN to /tmp/aeld-data
+/tmp/aeld-data created
+Removing the old writer utility and compiling as a native application
+rm -f writer writer.o
+gcc -Wall -Werror -c writer.c -o writer.o
+gcc -Wall -Werror -o writer writer.o 
+rm -f writer writer.o
+gcc -Wall -Werror -c writer.c -o writer.o
+gcc -Wall -Werror -o writer writer.o 
+Successfully wrote to /tmp/aeld-data/HartnettMatt1.txt
+rm -f writer writer.o
+gcc -Wall -Werror -c writer.c -o writer.o
+gcc -Wall -Werror -o writer writer.o 
+Successfully wrote to /tmp/aeld-data/HartnettMatt2.txt
+rm -f writer writer.o
+gcc -Wall -Werror -c writer.c -o writer.o
+gcc -Wall -Werror -o writer writer.o 
+Successfully wrote to /tmp/aeld-data/HartnettMatt3.txt
+rm -f writer writer.o
+gcc -Wall -Werror -c writer.c -o writer.o
+gcc -Wall -Werror -o writer writer.o 
+Successfully wrote to /tmp/aeld-data/HartnettMatt4.txt
+rm -f writer writer.o
+gcc -Wall -Werror -c writer.c -o writer.o
+gcc -Wall -Werror -o writer writer.o 
+Successfully wrote to /tmp/aeld-data/HartnettMatt5.txt
+rm -f writer writer.o
+gcc -Wall -Werror -c writer.c -o writer.o
+gcc -Wall -Werror -o writer writer.o 
+Successfully wrote to /tmp/aeld-data/HartnettMatt6.txt
+rm -f writer writer.o
+gcc -Wall -Werror -c writer.c -o writer.o
+gcc -Wall -Werror -o writer writer.o 
+Successfully wrote to /tmp/aeld-data/HartnettMatt7.txt
+rm -f writer writer.o
+gcc -Wall -Werror -c writer.c -o writer.o
+gcc -Wall -Werror -o writer writer.o 
+Successfully wrote to /tmp/aeld-data/HartnettMatt8.txt
+rm -f writer writer.o
+gcc -Wall -Werror -c writer.c -o writer.o
+gcc -Wall -Werror -o writer writer.o 
+Successfully wrote to /tmp/aeld-data/HartnettMatt9.txt
+rm -f writer writer.o
+gcc -Wall -Werror -c writer.c -o writer.o
+gcc -Wall -Werror -o writer writer.o 
+Successfully wrote to /tmp/aeld-data/HartnettMatt10.txt
+The number of files are 10 and the number of matching lines are 10
+success
+Test of assignment assignment2 complete with success
