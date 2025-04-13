@@ -1,3 +1,4 @@
+#define GPIOD_API_VERSION 2
 #include <gpiod.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -8,8 +9,7 @@
 int main() {
     struct gpiod_chip *chip;
     struct gpiod_line *line;
-    int val = 0;
-    int ret;
+    int val = 0, ret;
 
     chip = gpiod_chip_open(GPIO_CHIP);
     if (!chip) {
@@ -24,8 +24,8 @@ int main() {
         return 1;
     }
 
-    // Explicitly call the version 2 function, providing a flags parameter (set to 0).
-    ret = gpiod_line_request_output_flags(line, "blink_gpio", 0, 0);
+    // Use the version 2 API function with explicit flags.
+    ret = gpiod_line_request_output_flags(line, "gpio_test", 0, 0);
     if (ret < 0) {
         perror("Request line as output failed");
         gpiod_chip_close(chip);
