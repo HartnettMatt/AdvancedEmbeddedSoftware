@@ -9,29 +9,24 @@
 int main(void) {
     struct gpiod_chip *chip;
     struct gpiod_line *line;
+    struct gpiod_line_request *req;
     int ret, val = 0;
 
-    struct gpiod_line_request_config config = {
-        .consumer = "gpio_test",
-        .request_type = GPIOD_LINE_REQUEST_DIRECTION_OUTPUT,
-        .flags = 0,
-    };
-
-    chip = gpiod_chip_open_by_path(GPIO_CHIP);
+    chip = gpiod_chip_open(GPIO_CHIP);
     if (!chip) {
         perror("Open chip failed");
         return 1;
     }
 
-    line = gpiod_chip_get_line_by_offset(chip, GPIO_LINE);
+    line = gpiod_chip_get_line(chip, GPIO_LINE);
     if (!line) {
         perror("Get line failed");
         gpiod_chip_close(chip);
         return 1;
     }
 
-    ret = gpiod_line_request(line, &config, 0);
-    if (ret < 0) {
+    req = gpiod_line_request_output_flags(line, "gpio_test", 0, 0);
+    if (!req) {
         perror("Request line as output failed");
         gpiod_chip_close(chip);
         return 1;
@@ -48,7 +43,8 @@ int main(void) {
         sleep(1);
     }
 
-    gpiod_line_request_release(line);
+    gpiod_line_request_release(req);
     gpiod_chip_close(chip);
+
     return 0;
 }
