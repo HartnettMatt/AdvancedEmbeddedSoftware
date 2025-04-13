@@ -13,15 +13,19 @@ int main(void) {
     int current = 0;
     unsigned int offset = GPIO_LINE_OFFSET;
 
+    struct gpiod_request_config config = {
+        .consumer = "gpio_test",
+        .request_type = GPIOD_LINE_DIRECTION_OUTPUT,
+        .flags = 0
+    };
+
     chip = gpiod_chip_open(GPIO_CHIP);
     if (!chip) {
         perror("Failed to open chip");
         return 1;
     }
 
-    req = gpiod_chip_request_lines(chip, "gpio_test",
-                                   GPIOD_LINE_REQUEST_DIRECTION_OUTPUT,
-                                   &offset, 1, &current);
+    req = gpiod_chip_request_lines(chip, &config, &offset, 1, &current);
     if (!req) {
         perror("Failed to request line");
         gpiod_chip_close(chip);
