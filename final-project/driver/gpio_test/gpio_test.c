@@ -8,9 +8,11 @@
 
 int main(void) {
     struct gpiod_chip *chip;
-    struct gpiod_line *line;
-    struct gpiod_line_request *request;
-    int ret, val = 0;
+    struct gpiod_line_bulk bulk;
+    int offsets[1] = { GPIO_LINE_OFFSET };
+    int ret;
+    int current = 0;
+    int val_array[1];
 
     chip = gpiod_chip_open(GPIO_CHIP);
     if (!chip) {
@@ -18,35 +20,34 @@ int main(void) {
         return 1;
     }
 
-    line = gpiod_chip_get_line(chip, GPIO_LINE_OFFSET);
-    if (!line) {
-        perror("Failed to get line");
+    ret = gpiod_chip_get_lines(chip, offsets, 1, &bulk);
+    if (ret < 0) {
+        perror("Failed to get line bulk");
         gpiod_chip_close(chip);
         return 1;
     }
 
-    /* Use the v2 convenience function to request the line as output.
-       This returns a request object that will be used for subsequent operations.
-    */
-    request = gpiod_line_request_output(line, "gpio_test", 0);
-    if (!request) {
-        perror("Failed to request line as output");
+    ret = gpiod_line_request_bulk_output(&bulk, "gpio_test", &current);
+    if (ret < 0) {
+        perror("Failed to request bulk output");
         gpiod_chip_close(chip);
         return 1;
     }
 
     while (1) {
-        ret = gpiod_line_request_set_value(request, val);
+        current = !current;
+        val_array[0] = current;
+        ret = gpiod_line_set_value_bulk(&bulk, val_array);
         if (ret < 0) {
-            perror("Failed to set line value");
+            perror("Failed to set line bulk value");
             break;
         }
-        printf("GPIO set to %d\n", val);
-        val = !val;
+        printf("GPIO set to %d\n", current);
         sleep(1);
     }
 
-    gpiod_line_request_release(request);
+    // Release the lines and close the chip.
+    gpiod_line_release_bulk(&bulk);
     gpiod_chip_close(chip);
     return 0;
 }
