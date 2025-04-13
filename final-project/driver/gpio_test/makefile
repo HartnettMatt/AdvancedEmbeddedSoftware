@@ -14,8 +14,8 @@ CROSS_COMPILE ?=
 
 # The compiler and linker commands
 CC      := $(CROSS_COMPILE)gcc
-CFLAGS  := -Wall -Werror $(shell pkg-config --cflags libgpiod) -DGPIOD_API_VERSION=2
-LDFLAGS := $(shell pkg-config --libs libgpiod)
+CFLAGS  := -Wall -Werror -DGPIOD_API_VERSION=2 -I$(STAGING_DIR)/usr/include
+LDFLAGS := -L$(STAGING_DIR)/usr/lib -lgpiod
 
 # The target application and its object files
 TARGET  := gpio_test
