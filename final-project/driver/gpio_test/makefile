@@ -14,7 +14,7 @@ CROSS_COMPILE ?=
 
 # The compiler and linker commands
 CC      := $(CROSS_COMPILE)gcc
-CFLAGS  := -Wall -Werror
+CFLAGS  := -Wall -Werror -DGPIOD_API_VERSION=2
 LDFLAGS := -lgpiod
 
 # The target application and its object files
