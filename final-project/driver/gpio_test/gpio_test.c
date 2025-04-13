@@ -9,6 +9,7 @@ int main() {
     struct gpiod_chip *chip;
     struct gpiod_line *line;
     int val = 0;
+    int ret;
 
     chip = gpiod_chip_open(GPIO_CHIP);
     if (!chip) {
@@ -23,14 +24,20 @@ int main() {
         return 1;
     }
 
-    if (gpiod_line_request_output(line, "blink_gpio", 0) < 0) {
+    // Explicitly call the version 2 function, providing a flags parameter (set to 0).
+    ret = gpiod_line_request_output_flags(line, "blink_gpio", 0, 0);
+    if (ret < 0) {
         perror("Request line as output failed");
         gpiod_chip_close(chip);
         return 1;
     }
 
     while (1) {
-        gpiod_line_set_value(line, val);
+        ret = gpiod_line_set_value(line, val);
+        if (ret < 0) {
+            perror("Set line value failed");
+            break;
+        }
         printf("GPIO set to %d\n", val);
         val = !val;
         sleep(1);
