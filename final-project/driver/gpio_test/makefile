@@ -14,8 +14,8 @@ CROSS_COMPILE ?=
 
 # The compiler and linker commands
 CC      := $(CROSS_COMPILE)gcc
-CFLAGS  := -Wall -Werror -DGPIOD_API_VERSION=2 -I$(STAGING_DIR)/usr/include
-LDFLAGS := -L$(STAGING_DIR)/usr/lib -lgpiod
+CFLAGS  := -Wall -Werror
+LIBS    += -lgpiod
 
 # The target application and its object files
 TARGET  := gpio_test
@@ -30,10 +30,10 @@ all: $(TARGET)
 # Rules to build the target application
 ###############################################################################
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS) $(LIBS)
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@ $(LIBS)
 
 ###############################################################################
 # Clean target: remove build artifacts
