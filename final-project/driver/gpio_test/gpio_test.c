@@ -4,20 +4,14 @@
 #include <unistd.h>
 
 #define GPIO_CHIP "/dev/gpiochip0"
-#define GPIO_LINE_OFFSET 17
+#define GPIO_LINE_OFFSET 15
 
 int main(void) {
     struct gpiod_chip *chip;
     struct gpiod_line_request *req;
     int ret;
-    int current = 0;
-    unsigned int offset = GPIO_LINE_OFFSET;
-
-    struct gpiod_request_config config = {
-        .consumer = "gpio_test",
-        .request_type = GPIOD_LINE_DIRECTION_OUTPUT,
-        .flags = 0
-    };
+    int current = 0;  // initial output value
+    unsigned int offset = GPIO_LINE_OFFSET; // single line offset
 
     chip = gpiod_chip_open(GPIO_CHIP);
     if (!chip) {
@@ -25,7 +19,7 @@ int main(void) {
         return 1;
     }
 
-    req = gpiod_chip_request_lines(chip, &config, &offset, 1, &current);
+    req = gpiod_chip_request_lines(chip, "gpio_test", &offset, 1, current);
     if (!req) {
         perror("Failed to request line");
         gpiod_chip_close(chip);
@@ -43,6 +37,7 @@ int main(void) {
         sleep(1);
     }
 
+    // Release the line request and close the chip.
     gpiod_line_request_release(req);
     gpiod_chip_close(chip);
     return 0;
