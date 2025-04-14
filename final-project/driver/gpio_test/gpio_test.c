@@ -1,6 +1,12 @@
+// Some of this code was copied from the libgpiod examples:
+// https://git.kernel.org/pub/scm/libs/libgpiod/libgpiod.git/
+
 #define GPIOD_API_VERSION 2
 #define GPIO_CHIP "/dev/gpiochip0"
-#define GPIO_LINE_OFFSET 15
+#define MOTOR_RIGHT_1_OFFSET 15
+#define MOTOR_RIGHT_2_OFFSET 18
+#define MOTOR_LEFT_1_OFFSET 23
+#define MOTOR_LEFT_2_OFFSET 24
 #include <errno.h>
 #include <gpiod.h>
 #include <stdio.h>
@@ -8,6 +14,9 @@
 #include <string.h>
 #include <unistd.h>
 
+
+// This function does all of the setup necessary to control a GPIO line
+// This function was copied from libgpiod
 static struct gpiod_line_request *
 request_output_line(const char *chip_path, unsigned int offset,
 		    enum gpiod_line_value value, const char *consumer)
@@ -64,48 +73,113 @@ close_chip:
 	return request;
 }
 
-static enum gpiod_line_value toggle_line_value(enum gpiod_line_value value)
-{
-	return (value == GPIOD_LINE_VALUE_ACTIVE) ? GPIOD_LINE_VALUE_INACTIVE :
-						    GPIOD_LINE_VALUE_ACTIVE;
-}
-
-static const char * value_str(enum gpiod_line_value value)
-{
-	if (value == GPIOD_LINE_VALUE_ACTIVE)
-		return "Active";
-	else if (value == GPIOD_LINE_VALUE_INACTIVE) {
-		return "Inactive";
-	} else {
-		return "Unknown";
-	}
-}
-
+// Currently just run through a power on self test of motor control forever
 int main(void)
 {
-	/* Example configuration - customize to suit your situation. */
 	static const char *const chip_path = GPIO_CHIP;
-	static const unsigned int line_offset = GPIO_LINE_OFFSET;
+	static const unsigned int mr1_line_offset = MOTOR_RIGHT_1_OFFSET;
+	static const unsigned int mr2_line_offset = MOTOR_RIGHT_2_OFFSET;
+	static const unsigned int ml1_line_offset = MOTOR_LEFT_1_OFFSET;
+	static const unsigned int ml2_line_offset = MOTOR_LEFT_2_OFFSET;
 
-	enum gpiod_line_value value = GPIOD_LINE_VALUE_ACTIVE;
-	struct gpiod_line_request *request;
+	enum gpiod_line_value value = GPIOD_LINE_VALUE_INACTIVE;
+	struct gpiod_line_request *mr1_request;
+	struct gpiod_line_request *mr2_request;
+	struct gpiod_line_request *ml1_request;
+	struct gpiod_line_request *ml2_request;
 
-	request = request_output_line(chip_path, line_offset, value,
-				      "toggle-line-value");
-	if (!request) {
-		fprintf(stderr, "failed to request line: %s\n",
+	mr1_request = request_output_line(chip_path, mr1_line_offset, value,
+				      "motor-control");
+	mr2_request = request_output_line(chip_path, mr2_line_offset, value,
+				      "motor-control");
+	ml1_request = request_output_line(chip_path, ml1_line_offset, value,
+				      "motor-control");
+	ml2_request = request_output_line(chip_path, ml2_line_offset, value,
+				      "motor-control");
+	if (!mr1_request) {
+		fprintf(stderr, "failed to request line mr1: %s\n",
+			strerror(errno));
+		return EXIT_FAILURE;
+	}
+	if (!mr2_request) {
+		fprintf(stderr, "failed to request line mr2: %s\n",
+			strerror(errno));
+		return EXIT_FAILURE;
+	}
+	if (!ml1_request) {
+		fprintf(stderr, "failed to request line ml1: %s\n",
+			strerror(errno));
+		return EXIT_FAILURE;
+	}
+	if (!ml2_request) {
+		fprintf(stderr, "failed to request line ml2: %s\n",
 			strerror(errno));
 		return EXIT_FAILURE;
 	}
 
-	for (;;) {
-		printf("%d=%s\n", line_offset, value_str(value));
+		printf("BEGINNING POWER ON SELF TEST");
 		sleep(1);
-		value = toggle_line_value(value);
-		gpiod_line_request_set_value(request, line_offset, value);
+	for (;;) {
+		printf("RIGHT MOTOR FORWARD");
+		gpiod_line_request_set_value(mr1_request, mr1_line_offset, GPIOD_LINE_VALUE_INACTIVE);
+		gpiod_line_request_set_value(mr2_request, mr2_line_offset, GPIOD_LINE_VALUE_ACTIVE);
+		sleep(1);
+		printf("RIGHT MOTOR BACKWARD");
+		gpiod_line_request_set_value(mr1_request, mr1_line_offset, GPIOD_LINE_VALUE_ACTIVE);
+		gpiod_line_request_set_value(mr2_request, mr2_line_offset, GPIOD_LINE_VALUE_INACTIVE);
+		sleep(1);
+		printf("RIGHT MOTOR STOP");
+		gpiod_line_request_set_value(mr1_request, mr1_line_offset, GPIOD_LINE_VALUE_INACTIVE);
+		gpiod_line_request_set_value(mr2_request, mr2_line_offset, GPIOD_LINE_VALUE_INACTIVE);
+		sleep(1);
+		printf("LEFT MOTOR FORWARD");
+		gpiod_line_request_set_value(ml1_request, ml1_line_offset, GPIOD_LINE_VALUE_INACTIVE);
+		gpiod_line_request_set_value(ml2_request, ml2_line_offset, GPIOD_LINE_VALUE_ACTIVE);
+		sleep(1);
+		printf("LEFT MOTOR BACKWARD");
+		gpiod_line_request_set_value(ml1_request, ml1_line_offset, GPIOD_LINE_VALUE_ACTIVE);
+		gpiod_line_request_set_value(ml2_request, ml2_line_offset, GPIOD_LINE_VALUE_INACTIVE);
+		sleep(1);
+		printf("LEFT MOTOR STOP");
+		gpiod_line_request_set_value(ml1_request, ml1_line_offset, GPIOD_LINE_VALUE_INACTIVE);
+		gpiod_line_request_set_value(ml2_request, ml2_line_offset, GPIOD_LINE_VALUE_INACTIVE);
+		sleep(1);
+		printf("BOTH MOTOR FORWARD");
+		gpiod_line_request_set_value(mr1_request, mr1_line_offset, GPIOD_LINE_VALUE_INACTIVE);
+		gpiod_line_request_set_value(mr2_request, mr2_line_offset, GPIOD_LINE_VALUE_ACTIVE);
+		gpiod_line_request_set_value(ml1_request, ml1_line_offset, GPIOD_LINE_VALUE_INACTIVE);
+		gpiod_line_request_set_value(ml2_request, ml2_line_offset, GPIOD_LINE_VALUE_ACTIVE);
+		sleep(1);
+		printf("BOTH MOTOR BACKWARD");
+		gpiod_line_request_set_value(mr1_request, mr1_line_offset, GPIOD_LINE_VALUE_ACTIVE);
+		gpiod_line_request_set_value(mr2_request, mr2_line_offset, GPIOD_LINE_VALUE_INACTIVE);
+		gpiod_line_request_set_value(ml1_request, ml1_line_offset, GPIOD_LINE_VALUE_ACTIVE);
+		gpiod_line_request_set_value(ml2_request, ml2_line_offset, GPIOD_LINE_VALUE_INACTIVE);
+		sleep(1);
+		printf("BOTH MOTOR ALTERNATING 1");
+		gpiod_line_request_set_value(mr1_request, mr1_line_offset, GPIOD_LINE_VALUE_INACTIVE);
+		gpiod_line_request_set_value(mr2_request, mr2_line_offset, GPIOD_LINE_VALUE_ACTIVE);
+		gpiod_line_request_set_value(ml1_request, ml1_line_offset, GPIOD_LINE_VALUE_ACTIVE);
+		gpiod_line_request_set_value(ml2_request, ml2_line_offset, GPIOD_LINE_VALUE_INACTIVE);
+		sleep(1);
+		printf("BOTH MOTOR ALTERNATING 2");
+		gpiod_line_request_set_value(mr1_request, mr1_line_offset, GPIOD_LINE_VALUE_ACTIVE);
+		gpiod_line_request_set_value(mr2_request, mr2_line_offset, GPIOD_LINE_VALUE_INACTIVE);
+		gpiod_line_request_set_value(ml1_request, ml1_line_offset, GPIOD_LINE_VALUE_INACTIVE);
+		gpiod_line_request_set_value(ml2_request, ml2_line_offset, GPIOD_LINE_VALUE_ACTIVE);
+		sleep(1);
+		printf("BOTH MOTOR STOP");
+		gpiod_line_request_set_value(mr1_request, mr1_line_offset, GPIOD_LINE_VALUE_INACTIVE);
+		gpiod_line_request_set_value(mr2_request, mr2_line_offset, GPIOD_LINE_VALUE_INACTIVE);
+		gpiod_line_request_set_value(ml1_request, ml1_line_offset, GPIOD_LINE_VALUE_INACTIVE);
+		gpiod_line_request_set_value(ml2_request, ml2_line_offset, GPIOD_LINE_VALUE_INACTIVE);
+		sleep(1);
 	}
 
-	gpiod_line_request_release(request);
+	gpiod_line_request_release(mr1_request);
+	gpiod_line_request_release(mr2_request);
+	gpiod_line_request_release(ml1_request);
+	gpiod_line_request_release(ml2_request);
 
 	return EXIT_SUCCESS;
 }
