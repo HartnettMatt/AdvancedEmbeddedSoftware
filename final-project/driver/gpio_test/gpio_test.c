@@ -1,80 +1,111 @@
 #define GPIOD_API_VERSION 2
-#include <gpiod.h>
-#include <stdio.h>
-#include <unistd.h>
-
 #define GPIO_CHIP "/dev/gpiochip0"
 #define GPIO_LINE_OFFSET 15
+#include <errno.h>
+#include <gpiod.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
-int main(void) {
-    struct gpiod_chip *chip;
-    struct gpiod_line_request *req;
-    struct gpiod_request_config *req_config;
-    struct gpiod_line_config *line_config;
-    struct gpiod_line_settings *line_settings;
-    int ret;
-    int current = 0;  // initial output value
-    unsigned int offset = GPIO_LINE_OFFSET; // single line offset
+static struct gpiod_line_request *
+request_output_line(const char *chip_path, unsigned int offset,
+		    enum gpiod_line_value value, const char *consumer)
+{
+	struct gpiod_request_config *req_cfg = NULL;
+	struct gpiod_line_request *request = NULL;
+	struct gpiod_line_settings *settings;
+	struct gpiod_line_config *line_cfg;
+	struct gpiod_chip *chip;
+	int ret;
 
-    // Init chip, request, line config, and line settings
-    chip = gpiod_chip_open(GPIO_CHIP);
-    if (!chip) {
-        perror("Failed to init chip");
-        return 1;
-    }
+	chip = gpiod_chip_open(chip_path);
+	if (!chip)
+		return NULL;
 
-    req_config = gpiod_request_config_new();
-    if (!req_config) {
-        perror("Failed to init request");
-        return 1;
-    }
+	settings = gpiod_line_settings_new();
+	if (!settings)
+		goto close_chip;
 
-    line_config = gpiod_line_config_new();
-    if (!line_config) {
-        perror("Failed to init line");
-        return 1;
-    }
+	gpiod_line_settings_set_direction(settings,
+					  GPIOD_LINE_DIRECTION_OUTPUT);
+	gpiod_line_settings_set_output_value(settings, value);
 
-    line_settings = gpiod_line_settings_new();
-    if (!line_settings) {
-        perror("Failed to init line settings");
-        return 1;
-    }
+	line_cfg = gpiod_line_config_new();
+	if (!line_cfg)
+		goto free_settings;
 
-    // Configure line settings
-    if(!gpiod_line_settings_set_direction(line_settings, GPIOD_LINE_DIRECTION_OUTPUT)){
-        perror("Failed to set line output direction");
-        return 1;
-    }
+	ret = gpiod_line_config_add_line_settings(line_cfg, &offset, 1,
+						  settings);
+	if (ret)
+		goto free_line_config;
 
-    if(!gpiod_line_config_add_line_settings(line_config, &offset, 1, line_settings)){
-        perror("Failed to configure line settings");
-        return 1;
-    }
+	if (consumer) {
+		req_cfg = gpiod_request_config_new();
+		if (!req_cfg)
+			goto free_line_config;
 
-    req = gpiod_chip_request_lines(chip, req_config, line_config);
-    if (!req) {
-        perror("Failed to request line");
-        gpiod_chip_close(chip);
-        return 1;
-    }
+		gpiod_request_config_set_consumer(req_cfg, consumer);
+	}
 
-    while (1) {
-        current = !current;
-        ret = gpiod_line_request_set_value(req, offset, current);
-        if (ret < 0) {
-            perror("Failed to set line value");
-            break;
-        }
-        printf("GPIO set to %d\n", current);
-        sleep(1);
-    }
+	request = gpiod_chip_request_lines(chip, req_cfg, line_cfg);
 
-    // Release the line request and close the chip.
-    gpiod_line_settings_free(line_settings);
-    gpiod_line_request_release(req);
-    gpiod_line_config_free(line_config);
-    gpiod_request_config_free(req_config);
-    gpiod_chip_close(chip);
-    return 0;
+	gpiod_request_config_free(req_cfg);
+
+free_line_config:
+	gpiod_line_config_free(line_cfg);
+
+free_settings:
+	gpiod_line_settings_free(settings);
+
+close_chip:
+	gpiod_chip_close(chip);
+
+	return request;
+}
+
+static enum gpiod_line_value toggle_line_value(enum gpiod_line_value value)
+{
+	return (value == GPIOD_LINE_VALUE_ACTIVE) ? GPIOD_LINE_VALUE_INACTIVE :
+						    GPIOD_LINE_VALUE_ACTIVE;
+}
+
+static const char * value_str(enum gpiod_line_value value)
+{
+	if (value == GPIOD_LINE_VALUE_ACTIVE)
+		return "Active";
+	else if (value == GPIOD_LINE_VALUE_INACTIVE) {
+		return "Inactive";
+	} else {
+		return "Unknown";
+	}
+}
+
+int main(void)
+{
+	/* Example configuration - customize to suit your situation. */
+	static const char *const chip_path = GPIO_CHIP;
+	static const unsigned int line_offset = GPIO_LINE_OFFSET;
+
+	enum gpiod_line_value value = GPIOD_LINE_VALUE_ACTIVE;
+	struct gpiod_line_request *request;
+
+	request = request_output_line(chip_path, line_offset, value,
+				      "toggle-line-value");
+	if (!request) {
+		fprintf(stderr, "failed to request line: %s\n",
+			strerror(errno));
+		return EXIT_FAILURE;
+	}
+
+	for (;;) {
+		printf("%d=%s\n", line_offset, value_str(value));
+		sleep(1);
+		value = toggle_line_value(value);
+		gpiod_line_request_set_value(request, line_offset, value);
+	}
+
+	gpiod_line_request_release(request);
+
+	return EXIT_SUCCESS;
 }
