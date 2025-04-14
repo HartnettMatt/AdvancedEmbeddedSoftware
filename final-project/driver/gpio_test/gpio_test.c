@@ -46,8 +46,8 @@ int main(void) {
         perror("Failed to set line output direction");
         return 1;
     }
-    
-    if(!gpiod_line_config_add_line_settings(line_config, &offsets, 1, line_settings)){
+
+    if(!gpiod_line_config_add_line_settings(line_config, &offset, 1, line_settings)){
         perror("Failed to configure line settings");
         return 1;
     }
@@ -73,7 +73,7 @@ int main(void) {
     // Release the line request and close the chip.
     gpiod_line_settings_free(line_settings);
     gpiod_line_request_release(req);
-    gpiod_line_config_free(line_config)
+    gpiod_line_config_free(line_config);
     gpiod_request_config_free(req_config);
     gpiod_chip_close(chip);
     return 0;
