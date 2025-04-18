@@ -14,7 +14,9 @@ CROSS_COMPILE ?=
 
 # The compiler and linker commands
 CC      := $(CROSS_COMPILE)gcc
-CFLAGS  := -Wall -Werror
+CFLAGS  += -Wall -Werror
+# Include /usr/include for hcsr04 library
+CFLAGS  += -I$(STAGING_DIR)/usr/include
 LIBS    += -lgpiod -ldriver_hcsr04
 
 # The target application and its object files
