@@ -226,3 +226,7 @@ void hcsr04_interface_debug_print(const char *const fmt, ...)
     va_end(args);
 #endif
 }
+
+void hcsr04_interface_delay_us(uint32_t us) { usleep(us); }
+
+void hcsr04_interface_delay_ms(uint32_t ms) { usleep((useconds_t)ms * 1000); }
