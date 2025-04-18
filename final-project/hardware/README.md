@@ -27,19 +27,20 @@ image, [Source](https://www.raspberrypi.com/documentation/computers/raspberry-pi
 
 ## Important pins:
 
-| Hardware Pin | Pin Label | Net Name    | Connection         |
-|--------------|-----------|-------------|--------------------|
-| 4            | 5V Power  | VCC         | Power cable red    |
-| 6            | Ground    | GND         | Power cable black  |
-| 10           | GPIO 15   | RM_1        | Right motor orange |
-| 12           | GPIO 18   | RM_2        | Right motor green  |
-| 16           | GPIO 23   | LM_1        | Left motor blue    |
-| 18           | GPIO 24   | LM_2        | Left motor yellow  |
-| 3            | GPIO 2    | HCSR04_TRIG | HCSR04 (#TBD)      |
-| 5            | GPIO 3    | HCSR04_ECHO | HCSR04 (#TBD)      |
+| RPi Pin | Label    | Net Name    | Connection         |
+|---------|----------|-------------|--------------------|
+| 4       | 5V Power | VCC         | Power cable red    |
+| 6       | Ground   | GND         | Power cable black  |
+| 10      | GPIO 15  | RM_1        | Right motor orange |
+| 12      | GPIO 18  | RM_2        | Right motor green  |
+| 16      | GPIO 23  | LM_1        | Left motor blue    |
+| 18      | GPIO 24  | LM_2        | Left motor yellow  |
+| 11      | GPIO 17  | HCSR04_TRIG | HCSR04 (TBD)       |
+| 13      | GPIO 27  | HCSR04_ECHO | HCSR04 (TBD)       |
 
 ### Notes:
 
+* ECHO pin of the HCS04 is connected to a 1k/2.2k voltage divider to convert from 5V to 3.3V (roughly)
 * If motor mount v2:
     * Tighten tolerances around hex holes
     * Add 3rd mount point for PCB
