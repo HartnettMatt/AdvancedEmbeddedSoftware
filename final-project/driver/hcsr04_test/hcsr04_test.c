@@ -8,12 +8,27 @@
  *----------------------------------------------------------------------*/
 
 #include <stdio.h>
+#include <pthread.h>
+#include <sched.h>
 #include <unistd.h>
 #include "driver_hcsr04.h"
 #include "driver_hcsr04_interface.h"
 
 int main(void)
 {
+    // Increase scheduler priority and lock to a single core
+    struct sched_param p;
+    p.sched_priority = 80;
+    if (sched_setscheduler(0, SCHED_FIFO, &p) < 0) {
+        perror("sched_setscheduler");
+    }
+    cpu_set_t mask;
+    CPU_ZERO(&mask);
+    CPU_SET(0, &mask);    // pin to core 0
+    if (sched_setaffinity(0, sizeof(mask), &mask) < 0)
+        perror("sched_setaffinity");
+
+
     hcsr04_handle_t handle;
     uint32_t echo_us;
     float    dist_m;
@@ -38,14 +53,14 @@ int main(void)
     }
     printf("HC-SR04 initialised - reading 100 samples at 10 Hz");
 
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 200; i++) {
         if (hcsr04_read(&handle, &echo_us, &dist_m) == 0) {
             printf("Sample %3d: %7u µs  =  %6.1f cm\n",
                    i, echo_us, dist_m * 100.0f);
         } else {
             fprintf(stderr, "Read error at sample %d\n", i);
         }
-        usleep(200000);            // 100 ms
+        usleep(100000);            // 100 ms
     }
 
     hcsr04_deinit(&handle);
