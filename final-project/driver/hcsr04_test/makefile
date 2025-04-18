@@ -16,7 +16,7 @@ CROSS_COMPILE ?=
 CC      := $(CROSS_COMPILE)gcc
 CFLAGS  += -Wall -Werror
 # Include /usr/include for hcsr04 library
-LIBS    += -lgpiod -ldriver_hcsr04 -I$(STAGING_DIR)/usr/include
+LIBS    += -lgpiod -ldriver_hcsr04 -pthread -D_GNU_SOURCE -I$(STAGING_DIR)/usr/include
 
 # The target application and its object files
 SRCS := hcsr04_test.c hcsr04_port.c

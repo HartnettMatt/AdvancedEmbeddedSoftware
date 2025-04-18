@@ -7,6 +7,7 @@
  *  Reads distance every 100 ms for 10 s (100 samples).                 *
  *----------------------------------------------------------------------*/
 
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <pthread.h>
 #include <sched.h>
