@@ -45,7 +45,7 @@ int main(void)
         } else {
             fprintf(stderr, "Read error at sample %d\n", i);
         }
-        usleep(100000);            // 100 ms
+        usleep(200000);            // 100 ms
     }
 
     hcsr04_deinit(&handle);
