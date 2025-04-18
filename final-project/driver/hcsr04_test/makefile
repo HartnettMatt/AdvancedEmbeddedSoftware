@@ -14,9 +14,9 @@ CROSS_COMPILE ?=
 
 # The compiler and linker commands
 CC      := $(CROSS_COMPILE)gcc
-CFLAGS  += -Wall -Werror
+CPPFLAGS  += -Wall -Werror
 # Include /usr/include for hcsr04 library
-CFLAGS  += -I$(STAGING_DIR)/usr/include
+CPPFLAGS  += -I$(STAGING_DIR)/usr/include
 LIBS    += -lgpiod -ldriver_hcsr04
 
 # The target application and its object files
@@ -34,10 +34,10 @@ all: $(TARGET)
 # Rules to build the target application
 ###############################################################################
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS) $(LIBS)
+	$(CC) $(CPPFLAGS) -o $@ $^ $(LDFLAGS) $(LIBS)
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@ $(LIBS)
+	$(CC) $(CPPFLAGS) -c $< -o $@ $(LIBS)
 
 ###############################################################################
 # Clean target: remove build artifacts
