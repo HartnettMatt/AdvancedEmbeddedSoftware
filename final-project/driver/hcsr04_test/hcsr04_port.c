@@ -1,10 +1,10 @@
 /*----------------------------------------------------------------------*
  *  LibDriver HC‑SR04  ↔  libgpiod v2.2 port layer                      *
  *  GPIO mapping (BCM numbering):                                       *
- *      Trig → GPIO 17  (physical pin 3)                                 *
- *      Echo → GPIO 27  (physical pin 5)                                 *
+ *      Trig → GPIO 17  (physical pin 3)                                *
+ *      Echo → GPIO 27  (physical pin 5)                                *
  *----------------------------------------------------------------------*/
-
+#include <errno.h>
 #include <gpiod.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -14,32 +14,20 @@
 
 #define TRIG_GPIO 17
 #define ECHO_GPIO 27
+#define GPIO_CHIP "/dev/gpiochip0"
 
 static struct gpiod_line_request *trig_req = NULL;
 static struct gpiod_line_request *echo_req = NULL;
 
-/**
- * @brief Request a single GPIO line with libgpiod v2 and
- *        cleanly free all intermediate objects on error.
- *
- * @param chip_path  Path to gpiochip device (e.g. "/dev/gpiochip0").
- * @param offset     BCM GPIO number.
- * @param direction  GPIOD_LINE_DIRECTION_{INPUT,OUTPUT}.
- * @param value      Initial output value (ignored for inputs).
- * @param consumer   Consumer label or NULL.
- * @return Pointer to a gpiod_line_request on success, NULL on error.
- */
+// This function does all of the setup necessary to control a GPIO line
+// This function was copied from libgpiod
 static struct gpiod_line_request *
-request_line(const char *chip_path, unsigned int offset,
-             enum gpiod_line_direction direction,
-             enum gpiod_line_value value,
-             const char *consumer)
-{
+request_output_line(const char *chip_path, unsigned int offset, enum gpiod_line_value value, const char *consumer) {
     struct gpiod_request_config *req_cfg = NULL;
-    struct gpiod_line_request  *request  = NULL;
-    struct gpiod_line_settings *settings = NULL;
-    struct gpiod_line_config   *line_cfg = NULL;
-    struct gpiod_chip          *chip     = NULL;
+    struct gpiod_line_request *request = NULL;
+    struct gpiod_line_settings *settings;
+    struct gpiod_line_config *line_cfg;
+    struct gpiod_chip *chip;
     int ret;
 
     chip = gpiod_chip_open(chip_path);
@@ -50,22 +38,22 @@ request_line(const char *chip_path, unsigned int offset,
     if (!settings)
         goto close_chip;
 
-    gpiod_line_settings_set_direction(settings, direction);
-    if (direction == GPIOD_LINE_DIRECTION_OUTPUT)
-        gpiod_line_settings_set_output_value(settings, value);
+    gpiod_line_settings_set_direction(settings, GPIOD_LINE_DIRECTION_OUTPUT);
+    gpiod_line_settings_set_output_value(settings, value);
 
     line_cfg = gpiod_line_config_new();
     if (!line_cfg)
         goto free_settings;
 
-    ret = gpiod_line_config_add_line_settings(line_cfg, &offset, 1, settings);
+    ret = gpiod_line_config_add_line_settings(line_cfg, &offset, 1,
+                                              settings);
     if (ret)
-        goto free_line_cfg;
+        goto free_line_config;
 
     if (consumer) {
         req_cfg = gpiod_request_config_new();
         if (!req_cfg)
-            goto free_line_cfg;
+            goto free_line_config;
 
         gpiod_request_config_set_consumer(req_cfg, consumer);
     }
@@ -74,7 +62,7 @@ request_line(const char *chip_path, unsigned int offset,
 
     gpiod_request_config_free(req_cfg);
 
-free_line_cfg:
+free_line_config:
     gpiod_line_config_free(line_cfg);
 
 free_settings:
@@ -82,7 +70,63 @@ free_settings:
 
 close_chip:
     gpiod_chip_close(chip);
+
     return request;
+}
+// This function does all of the setup necessary to read a GPIO line
+// This function was copied from libgpiod
+static struct gpiod_line_request *request_input_line(const char *chip_path,
+						     unsigned int offset,
+						     const char *consumer)
+{
+	struct gpiod_request_config *req_cfg = NULL;
+	struct gpiod_line_request *request = NULL;
+	struct gpiod_line_settings *settings;
+	struct gpiod_line_config *line_cfg;
+	struct gpiod_chip *chip;
+	int ret;
+
+	chip = gpiod_chip_open(chip_path);
+	if (!chip)
+		return NULL;
+
+	settings = gpiod_line_settings_new();
+	if (!settings)
+		goto close_chip;
+
+	gpiod_line_settings_set_direction(settings, GPIOD_LINE_DIRECTION_INPUT);
+
+	line_cfg = gpiod_line_config_new();
+	if (!line_cfg)
+		goto free_settings;
+
+	ret = gpiod_line_config_add_line_settings(line_cfg, &offset, 1,
+						  settings);
+	if (ret)
+		goto free_line_config;
+
+	if (consumer) {
+		req_cfg = gpiod_request_config_new();
+		if (!req_cfg)
+			goto free_line_config;
+
+		gpiod_request_config_set_consumer(req_cfg, consumer);
+	}
+
+	request = gpiod_chip_request_lines(chip, req_cfg, line_cfg);
+
+	gpiod_request_config_free(req_cfg);
+
+free_line_config:
+	gpiod_line_config_free(line_cfg);
+
+free_settings:
+	gpiod_line_settings_free(settings);
+
+close_chip:
+	gpiod_chip_close(chip);
+
+	return request;
 }
 
 /**
@@ -91,10 +135,7 @@ close_chip:
  */
 uint8_t hcsr04_interface_trig_init(void)
 {
-    trig_req = request_line(CHIP_DEV, TRIG_GPIO,
-                            GPIOD_LINE_DIRECTION_OUTPUT,
-                            GPIOD_LINE_VALUE_INACTIVE,
-                            "hcsr04-trig");
+    trig_req = request_output_line(GPIO_CHIP, TRIG_GPIO, GPIOD_LINE_VALUE_INACTIVE, "hcsr04-trig");
     return (trig_req == NULL);
 }
 
@@ -119,8 +160,7 @@ uint8_t hcsr04_interface_trig_deinit(void)
 uint8_t hcsr04_interface_trig_write(uint8_t value)
 {
     if (!trig_req) return 1;
-    struct gpiod_line *line = gpiod_line_request_get_line(trig_req, 0);
-    return gpiod_line_set_value(line, value ? 1 : 0) ? 1 : 0;
+    return gpiod_line_request_set_value(trig_req, TRIG_GPIO, value ? GPIOD_LINE_VALUE_ACTIVE : GPIOD_LINE_VALUE_INACTIVE) ? 1 : 0;
 }
 
 /**
@@ -129,10 +169,7 @@ uint8_t hcsr04_interface_trig_write(uint8_t value)
  */
 uint8_t hcsr04_interface_echo_init(void)
 {
-    echo_req = request_line(CHIP_DEV, ECHO_GPIO,
-                            GPIOD_LINE_DIRECTION_INPUT,
-                            GPIOD_LINE_VALUE_INACTIVE,
-                            "hcsr04-echo");
+     echo_req = request_input_line(GPIO_CHIP, ECHO_GPIO, "hcsr04-echo");
     return (echo_req == NULL);
 }
 
@@ -157,10 +194,9 @@ uint8_t hcsr04_interface_echo_deinit(void)
 uint8_t hcsr04_interface_echo_read(uint8_t *value)
 {
     if (!echo_req) return 1;
-    struct gpiod_line *line = gpiod_line_request_get_line(echo_req, 0);
-    int v = gpiod_line_get_value(line);
-    if (v < 0) return 1;
-    *value = (uint8_t)v;
+    enum gpiod_line_value val;
+    val = gpiod_line_request_get_value(echo_req, ECHO_GPIO);
+    *value = val == GPIOD_LINE_VALUE_ACTIVE ? 1 : 0;
     return 0;
 }
 
