@@ -38,12 +38,12 @@ int main(void)
     }
     puts("HC‑SR04 initialised — reading 100 samples at 10 Hz…");
 
-    for (int i = 0; i < 100; ++i) {
+    for (int i = 0; i < 100; i++) {
         if (hcsr04_read(&handle, &echo_us, &dist_m) == 0) {
             printf("Sample %3d: %7u µs  ≈  %6.1f cm\n",
-                   i + 1, echo_us, dist_m * 100.0f);
+                   i, echo_us, dist_m * 100.0f);
         } else {
-            fprintf(stderr, "Read error at sample %d\n", i + 1);
+            fprintf(stderr, "Read error at sample %d\n", i);
         }
         usleep(100000);            // 100 ms
     }

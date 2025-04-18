@@ -18,6 +18,7 @@
 
 static struct gpiod_line_request *trig_req = NULL;
 static struct gpiod_line_request *echo_req = NULL;
+static struct gpiod_edge_event_buffer *echo_event_buffer = NULL;
 
 // This function does all of the setup necessary to control a GPIO line
 // This function was copied from libgpiod
@@ -73,60 +74,65 @@ close_chip:
 
     return request;
 }
-// This function does all of the setup necessary to read a GPIO line
-// This function was copied from libgpiod
-static struct gpiod_line_request *request_input_line(const char *chip_path,
-						     unsigned int offset,
-						     const char *consumer)
+
+// This function does all of the setup necessary to read a GPIO line with edge detection
+// Adapted from libgpiod example to set up both-edge detection, pull-up, and debounce
+static struct gpiod_line_request *
+request_input_line(const char *chip_path,
+                   unsigned int offset,
+                   const char *consumer)
 {
-	struct gpiod_request_config *req_cfg = NULL;
-	struct gpiod_line_request *request = NULL;
-	struct gpiod_line_settings *settings;
-	struct gpiod_line_config *line_cfg;
-	struct gpiod_chip *chip;
-	int ret;
+    struct gpiod_request_config *req_cfg = NULL;
+    struct gpiod_line_request *request = NULL;
+    struct gpiod_line_settings *settings;
+    struct gpiod_line_config *line_cfg;
+    struct gpiod_chip *chip;
+    int ret;
 
-	chip = gpiod_chip_open(chip_path);
-	if (!chip)
-		return NULL;
+    chip = gpiod_chip_open(chip_path);
+    if (!chip)
+        return NULL;
 
-	settings = gpiod_line_settings_new();
-	if (!settings)
-		goto close_chip;
+    settings = gpiod_line_settings_new();
+    if (!settings)
+        goto close_chip;
 
-	gpiod_line_settings_set_direction(settings, GPIOD_LINE_DIRECTION_INPUT);
+    gpiod_line_settings_set_direction(settings, GPIOD_LINE_DIRECTION_INPUT);
+    gpiod_line_settings_set_edge_detection(settings, GPIOD_LINE_EDGE_BOTH);
+    gpiod_line_settings_set_bias(settings, GPIOD_LINE_BIAS_PULL_UP);
+    gpiod_line_settings_set_debounce_period_us(settings, 10000);
 
-	line_cfg = gpiod_line_config_new();
-	if (!line_cfg)
-		goto free_settings;
+    line_cfg = gpiod_line_config_new();
+    if (!line_cfg)
+        goto free_settings;
 
-	ret = gpiod_line_config_add_line_settings(line_cfg, &offset, 1,
-						  settings);
-	if (ret)
-		goto free_line_config;
+    ret = gpiod_line_config_add_line_settings(line_cfg, &offset, 1,
+                                              settings);
+    if (ret)
+        goto free_line_config;
 
-	if (consumer) {
-		req_cfg = gpiod_request_config_new();
-		if (!req_cfg)
-			goto free_line_config;
+    if (consumer) {
+        req_cfg = gpiod_request_config_new();
+        if (!req_cfg)
+            goto free_line_config;
 
-		gpiod_request_config_set_consumer(req_cfg, consumer);
-	}
+        gpiod_request_config_set_consumer(req_cfg, consumer);
+    }
 
-	request = gpiod_chip_request_lines(chip, req_cfg, line_cfg);
+    request = gpiod_chip_request_lines(chip, req_cfg, line_cfg);
 
-	gpiod_request_config_free(req_cfg);
+    gpiod_request_config_free(req_cfg);
 
 free_line_config:
-	gpiod_line_config_free(line_cfg);
+    gpiod_line_config_free(line_cfg);
 
 free_settings:
-	gpiod_line_settings_free(settings);
+    gpiod_line_settings_free(settings);
 
 close_chip:
-	gpiod_chip_close(chip);
+    gpiod_chip_close(chip);
 
-	return request;
+    return request;
 }
 
 /**
@@ -164,17 +170,26 @@ uint8_t hcsr04_interface_trig_write(uint8_t value)
 }
 
 /**
- * @brief Initialise the Echo line (input).
+ * @brief Initialise the Echo line (input with edge detection).
  * @return 0 on success, 1 on failure.
  */
 uint8_t hcsr04_interface_echo_init(void)
 {
-     echo_req = request_input_line(GPIO_CHIP, ECHO_GPIO, "hcsr04-echo");
-    return (echo_req == NULL);
+    echo_req = request_input_line(GPIO_CHIP, ECHO_GPIO, "hcsr04-echo");
+    if (!echo_req) {
+        return 1;
+    }
+    echo_event_buffer = gpiod_edge_event_buffer_new(1);
+    if (!echo_event_buffer) {
+        gpiod_line_request_release(echo_req);
+        echo_req = NULL;
+        return 1;
+    }
+    return 0;
 }
 
 /**
- * @brief Release the Echo line.
+ * @brief Release the Echo line and associated event buffer.
  * @return Always 0.
  */
 uint8_t hcsr04_interface_echo_deinit(void)
@@ -183,20 +198,29 @@ uint8_t hcsr04_interface_echo_deinit(void)
         gpiod_line_request_release(echo_req);
         echo_req = NULL;
     }
+    if (echo_event_buffer) {
+        gpiod_edge_event_buffer_free(echo_event_buffer);
+        echo_event_buffer = NULL;
+    }
     return 0;
 }
 
 /**
- * @brief Read current logic level on Echo line.
- * @param[out] value 0 = LOW, 1 = HIGH.
+ * @brief Read next edge event on Echo line, blocking until one occurs.
+ * @param[out] value 0 = LOW (falling edge), 1 = HIGH (rising edge).
  * @return 0 on success, 1 on error.
  */
 uint8_t hcsr04_interface_echo_read(uint8_t *value)
 {
-    if (!echo_req) return 1;
-    enum gpiod_line_value val;
-    val = gpiod_line_request_get_value(echo_req, ECHO_GPIO);
-    *value = val == GPIOD_LINE_VALUE_ACTIVE ? 1 : 0;
+    if (!echo_req || !echo_event_buffer) return 1;
+    int ret = gpiod_line_request_read_edge_events(echo_req, echo_event_buffer, 1);
+    if (ret <= 0) return 1;
+    struct gpiod_edge_event *event = gpiod_edge_event_buffer_get_event(echo_event_buffer, 0);
+    if (gpiod_edge_event_get_event_type(event) == GPIOD_EDGE_EVENT_RISING_EDGE) {
+        *value = 1;
+    } else {
+        *value = 0;
+    }
     return 0;
 }
 
