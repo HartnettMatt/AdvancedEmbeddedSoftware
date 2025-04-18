@@ -36,11 +36,11 @@ int main(void)
         fprintf(stderr, "HC‑SR04 init failed (%d)\n", ret);
         return 1;
     }
-    puts("HC‑SR04 initialised — reading 100 samples at 10 Hz…");
+    printf("HC-SR04 initialised - reading 100 samples at 10 Hz");
 
     for (int i = 0; i < 100; i++) {
         if (hcsr04_read(&handle, &echo_us, &dist_m) == 0) {
-            printf("Sample %3d: %7u µs  ≈  %6.1f cm\n",
+            printf("Sample %3d: %7u µs  =  %6.1f cm\n",
                    i, echo_us, dist_m * 100.0f);
         } else {
             fprintf(stderr, "Read error at sample %d\n", i);
@@ -49,6 +49,6 @@ int main(void)
     }
 
     hcsr04_deinit(&handle);
-    puts("Done.");
+    printf("Done.");
     return 0;
 }
