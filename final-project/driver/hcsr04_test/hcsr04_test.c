@@ -56,6 +56,10 @@ int main(void)
 
     for (int i = 0; i < 200; i++) {
         if (hcsr04_read(&handle, &echo_us, &dist_m) == 0) {
+            if(echo_us > 1000){
+                echo_us = echo_us - 1000;
+                dist_m = dist_m - (0.17);
+            }
             printf("Sample %3d: %7u µs  =  %6.1f cm\n",
                    i, echo_us, dist_m * 100.0f);
         } else {
