@@ -46,6 +46,7 @@ int main(void)
     if (sched_setaffinity(0, sizeof(mask), &mask) < 0)
         perror("sched_setaffinity");
 
+    printf("Start init procedure...");
     // Init motor
     if(motor_init() != 0){
         goto motor_fail;
