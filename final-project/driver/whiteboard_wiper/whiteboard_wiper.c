@@ -14,7 +14,6 @@
  */
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
-#include "AdvancedEmbeddedSoftware/final-project/driver/whiteboard_wiper/inc/motor.h"
 #endif // _GNU_SOURCE
 #include <stdio.h>
 #include <pthread.h>
@@ -46,7 +45,7 @@ int main(void)
     if (sched_setaffinity(0, sizeof(mask), &mask) < 0)
         perror("sched_setaffinity");
 
-    printf("Start init procedure...");
+    printf("Start init procedure...\n");
     // Init motor
     if(motor_init() != 0){
         goto motor_fail;
@@ -57,7 +56,7 @@ int main(void)
     }
 
     // Test motors
-    printf("Testing motors...");
+    printf("Testing motors...\n");
     motor_forward_start();
     usleep(10);
     motor_stop();
@@ -71,7 +70,7 @@ int main(void)
     float wall_dist_m;
 
     // Calibrate wall distance
-    printf("Calibrating wall distance");
+    printf("Calibrating wall distance\n");
     for(int i = 0; i < CAL_CYCLES; i++){
         if(read_hcsr04(&echo_time, &dist_m) != 0){
             goto cal_fail;
@@ -84,7 +83,7 @@ int main(void)
         }
     }
     wall_dist_m = wall_dist_m / CAL_CYCLES;
-    printf("Calibrated wall distance = %6.1f cm", dist_m * 100.0f);
+    printf("Calibrated wall distance = %6.1f cm\n", dist_m * 100.0f);
 
     // Start control loop
     motor_forward_start();
@@ -124,11 +123,11 @@ int main(void)
 
     deinit_hcsr04();
     motor_deinit();
-    printf("Done.");
+    printf("Done.\n");
     return 0;
 
     cleanup:
-        printf("Cleaning up");
+        printf("Cleaning up\n");
         motor_stop();
     cal_fail:
         deinit_hcsr04();
