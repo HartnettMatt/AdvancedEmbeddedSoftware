@@ -58,16 +58,16 @@ int main(void)
     // Test motors
     printf("Testing motors...\n");
     motor_forward_start();
-    usleep(10);
+    usleep(100);
     motor_stop();
-    usleep(10);
+    usleep(100);
     motor_backward_start();
-    usleep(10);
+    usleep(100);
     motor_stop();
 
     uint32_t echo_time;
     float dist_m;
-    float wall_dist_m;
+    float wall_dist_m = 0.0f;
 
     // Calibrate wall distance
     printf("Calibrating wall distance\n");
@@ -89,13 +89,14 @@ int main(void)
     motor_forward_start();
 
     while(1){
+        printf("Reading distance...\n");
         if(read_hcsr04(&echo_time, &dist_m) != 0){
             goto cleanup;
         }
         if(fabs(dist_m - wall_dist_m) > WALL_RANGE){
             // Edge of wall detected, turn around
             motor_stop();
-            usleep(10);
+            usleep(100);
             motor_backward_start();
             usleep(REVERSE_TIME); // 100 ms
             if (!keep_running) {
@@ -103,7 +104,7 @@ int main(void)
                 goto cleanup;
             }
             motor_stop();
-            usleep(10);
+            usleep(100);
             motor_turn_cw_start();
             usleep(TURNAROUND_TIME); // 100 ms
             if (!keep_running) {
@@ -111,7 +112,7 @@ int main(void)
                 goto cleanup;
             }
             motor_stop();
-            usleep(10);
+            usleep(100);
             motor_forward_start();
         }
         usleep(100000);            // 100 ms
