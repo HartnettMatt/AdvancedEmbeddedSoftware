@@ -14,6 +14,7 @@
  */
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
+#include "AdvancedEmbeddedSoftware/final-project/driver/whiteboard_wiper/inc/motor.h"
 #endif // _GNU_SOURCE
 #include <stdio.h>
 #include <pthread.h>
@@ -54,11 +55,22 @@ int main(void)
         goto hcsr04_fail;
     }
 
+    // Test motors
+    printf("Testing motors...");
+    motor_forward_start();
+    usleep(10);
+    motor_stop();
+    usleep(10);
+    motor_backward_start();
+    usleep(10);
+    motor_stop();
+
     uint32_t echo_time;
     float dist_m;
     float wall_dist_m;
 
     // Calibrate wall distance
+    printf("Calibrating wall distance");
     for(int i = 0; i < CAL_CYCLES; i++){
         if(read_hcsr04(&echo_time, &dist_m) != 0){
             goto cal_fail;
