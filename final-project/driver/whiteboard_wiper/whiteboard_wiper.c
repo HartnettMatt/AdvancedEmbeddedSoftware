@@ -20,6 +20,7 @@
 #include <sched.h>
 #include <unistd.h>
 #include <math.h>
+#include <signal.h>
 #include "whiteboard_wiper.h"
 
 static volatile sig_atomic_t keep_running = 1;
