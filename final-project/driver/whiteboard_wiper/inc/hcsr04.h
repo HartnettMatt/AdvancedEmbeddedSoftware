@@ -43,7 +43,7 @@ int init_hcsr04(void);
  *                          after clamping.
  * @return 0 on success, non-zero on error.
  */
-int hcsr04_read(uint32_t *echo_time_us, float *distance_m);
+int read_hcsr04(uint32_t *echo_time_us, float *distance_m);
 
 /**
  * @brief Deinitialize the HC-SR04 sensor.

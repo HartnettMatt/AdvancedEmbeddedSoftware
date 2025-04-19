@@ -120,7 +120,7 @@ int init_hcsr04(void) {
     return hcsr04_init(&_hcsr04_handle);
 }
 
-int hcsr04_read(uint32_t *echo_time_us, float *distance_m) {
+int read_hcsr04(uint32_t *echo_time_us, float *distance_m) {
     uint32_t raw_us;
     float raw_m;
     int ret = hcsr04_read(&_hcsr04_handle, &raw_us, &raw_m);

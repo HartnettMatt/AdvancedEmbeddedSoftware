@@ -12,8 +12,9 @@
  *    turns around, and resumes forward motion
  *  - Responds to SIGINT (Ctrl+C) to cleanly exit the loop and deinitialize
  */
-
+#ifndef _GNU_SOURCE
 #define _GNU_SOURCE
+#endif // _GNU_SOURCE
 #include <stdio.h>
 #include <pthread.h>
 #include <sched.h>
@@ -58,7 +59,7 @@ int main(void)
 
     // Calibrate wall distance
     for(int i = 0; i < CAL_CYCLES; i++){
-        if(hcsr04_read(&echo_time, &dist_m) != 0){
+        if(read_hcsr04(&echo_time, &dist_m) != 0){
             goto cal_fail;
         }
         wall_dist_m = wall_dist_m + dist_m;
@@ -75,7 +76,7 @@ int main(void)
     motor_forward_start();
 
     while(1){
-        if(hcsr04_read(&echo_time, &dist_m) != 0){
+        if(read_hcsr04(&echo_time, &dist_m) != 0){
             goto cleanup;
         }
         if(fabs(dist_m - wall_dist_m) > WALL_RANGE){
