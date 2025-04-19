@@ -45,6 +45,11 @@ int main(void)
     if (sched_setaffinity(0, sizeof(mask), &mask) < 0)
         perror("sched_setaffinity");
 
+    // Register with SIGINT
+    if (signal(SIGINT, handle_sigint) == SIG_ERR) {
+        perror("signal");
+    }
+
     printf("Start init procedure...\n");
     // Init motor
     if(motor_init() != 0){
@@ -88,7 +93,7 @@ int main(void)
     // Start control loop
     motor_forward_start();
 
-    while(1){
+    while(keep_running){
         printf("Reading distance...\n");
         if(read_hcsr04(&echo_time, &dist_m) != 0){
             goto cleanup;
@@ -123,14 +128,14 @@ int main(void)
         }
     }
 
+    cleanup:
+    printf("Cleaning up\n");
+    motor_stop();
     deinit_hcsr04();
     motor_deinit();
     printf("Done.\n");
     return 0;
 
-    cleanup:
-        printf("Cleaning up\n");
-        motor_stop();
     cal_fail:
         deinit_hcsr04();
     hcsr04_fail:
