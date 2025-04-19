@@ -58,11 +58,11 @@ int main(void)
     // Test motors
     printf("Testing motors...\n");
     motor_forward_start();
-    usleep(100);
+    usleep(100000);
     motor_stop();
-    usleep(100);
+    usleep(100000);
     motor_backward_start();
-    usleep(100);
+    usleep(100000);
     motor_stop();
 
     uint32_t echo_time;
@@ -95,6 +95,7 @@ int main(void)
         }
         if(fabs(dist_m - wall_dist_m) > WALL_RANGE){
             // Edge of wall detected, turn around
+            printf("Found edge, turning around...\n");
             motor_stop();
             usleep(100);
             motor_backward_start();
