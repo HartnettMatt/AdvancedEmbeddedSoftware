@@ -27,7 +27,7 @@
  * @param chip_path Path to the GPIO chip device (e.g., GPIO_CHIP).
  * @return 0 on success, non-zero on failure.
  */
-int hcsr04_init(void);
+int init_hcsr04(void);
 
 /**
  * @brief Perform a single distance measurement.
@@ -50,6 +50,6 @@ int hcsr04_read(uint32_t *echo_time_us, float *distance_m);
  *
  * Releases GPIO lines and cleans up internal state.
  */
-void hcsr04_deinit(void);
+void deinit_hcsr04(void);
 
 #endif // HCSR04_H

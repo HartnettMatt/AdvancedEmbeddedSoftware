@@ -103,7 +103,7 @@ void hcsr04_interface_delay_ms(uint32_t ms) {
 // Public API
 static hcsr04_handle_t _hcsr04_handle;
 
-int hcsr04_init(void) {
+int init_hcsr04(void) {
     char *chip_path = GPIO_CHIP;
     DRIVER_HCSR04_LINK_INIT(&_hcsr04_handle, hcsr04_handle_t);
     DRIVER_HCSR04_LINK_TRIG_INIT(&_hcsr04_handle, hcsr04_interface_trig_init);
@@ -136,6 +136,6 @@ int hcsr04_read(uint32_t *echo_time_us, float *distance_m) {
     return 0;
 }
 
-void hcsr04_deinit(void) {
+void deinit_hcsr04(void) {
     hcsr04_deinit(&_hcsr04_handle);
 }

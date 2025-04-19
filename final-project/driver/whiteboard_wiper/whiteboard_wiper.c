@@ -1,15 +1,18 @@
-/*----------------------------------------------------------------------*
- *  HC‑SR04 functional test                                             *
- *  Reads distance every 100 ms for 10 s (100 samples).                 *
- *----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*
- *  HC‑SR04 functional test                                             *
- *  Reads distance every 100 ms for 10 s (100 samples).                 *
- *----------------------------------------------------------------------*/
+/**
+ * @file main.c
+ * @brief Main control loop for the whiteboard wiper application.
+ * @author Matt Hartnett
+ * @details
+ * Sets up real‑time scheduling and CPU affinity, initializes the motor and
+ * HC‑SR04 ultrasonic sensor, calibrates the target wall distance over a
+ * fixed number of samples, then enters a continuous control loop:
+ *  - Drives the motor forward
+ *  - Monitors distance to the wall
+ *  - If deviation beyond a threshold is detected, stops, reverses,
+ *    turns around, and resumes forward motion
+ *  - Responds to SIGINT (Ctrl+C) to cleanly exit the loop and deinitialize
+ */
 
-#include "AdvancedEmbeddedSoftware/final-project/driver/whiteboard_wiper/inc/hcsr04.h"
-#include "AdvancedEmbeddedSoftware/final-project/driver/whiteboard_wiper/inc/motor.h"
-#include "AdvancedEmbeddedSoftware/final-project/driver/whiteboard_wiper/motor.h"
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <pthread.h>
@@ -45,7 +48,7 @@ int main(void)
         goto motor_fail;
     }
     // Init sensor
-    if(hcsr04_init() != 0){
+    if(init_hcsr04() != 0){
         goto hcsr04_fail;
     }
 
@@ -104,7 +107,7 @@ int main(void)
         }
     }
 
-    hcsr04_deinit();
+    deinit_hcsr04();
     motor_deinit();
     printf("Done.");
     return 0;
@@ -113,7 +116,7 @@ int main(void)
         printf("Cleaning up");
         motor_stop();
     cal_fail:
-        hcsr04_deinit();
+        deinit_hcsr04();
     hcsr04_fail:
         motor_deinit();
     motor_fail:
