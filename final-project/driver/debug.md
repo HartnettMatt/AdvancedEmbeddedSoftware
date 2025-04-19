@@ -2,6 +2,13 @@
 
 This is simply a file for me (Matt Hartnett) to collect all of my debugging information to ensure I don't lose anything or solve the same problem twice.
 
+## Date: 4/18/2025
+**Goal:** Finish sprint by adding distance sensing
+**Notes:**
+* Had a lot of issues with random "spurs" where measurements would be wrong by +1000us
+* Clamped the output down, works a lot more reliably now
+* If distance is too short, doesn't really work very well
+* Sweet spot seems to be the 5-10cm range, probably place about 8 cm above whiteboard
 
 ## Date: 4/12/2025
 **Goal:** Finish sprint 1 by using GPIO to control motors

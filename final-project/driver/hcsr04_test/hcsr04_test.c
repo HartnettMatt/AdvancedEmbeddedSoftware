@@ -2,10 +2,6 @@
  *  HC‑SR04 functional test                                             *
  *  Reads distance every 100 ms for 10 s (100 samples).                 *
  *----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*
- *  HC‑SR04 functional test                                             *
- *  Reads distance every 100 ms for 10 s (100 samples).                 *
- *----------------------------------------------------------------------*/
 
 #define _GNU_SOURCE
 #include <stdio.h>
@@ -54,7 +50,7 @@ int main(void)
     }
     printf("HC-SR04 initialised - reading 100 samples at 10 Hz");
 
-    for (int i = 0; i < 200; i++) {
+    for (int i = 0; i < 50; i++) {
         if (hcsr04_read(&handle, &echo_us, &dist_m) == 0) {
             if(echo_us > 1000){
                 echo_us = echo_us - 1000;
