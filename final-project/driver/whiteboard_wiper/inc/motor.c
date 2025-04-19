@@ -20,13 +20,13 @@ int motor_init(void)
     unsigned int left1_offset = MOTOR_LEFT_1_OFFSET;
     unsigned int left2_offset = MOTOR_LEFT_2_OFFSET;
 
-    mr1_req = request_output_line(chip_path, right1_offset, inactive, "motor");
+    mr1_req = request_output_line(chip_path, right1_offset, inactive, "motor mr1");
     if (!mr1_req) goto fail;
-    mr2_req = request_output_line(chip_path, right2_offset, inactive, "motor");
+    mr2_req = request_output_line(chip_path, right2_offset, inactive, "motor mr2");
     if (!mr2_req) goto fail;
-    ml1_req = request_output_line(chip_path, left1_offset, inactive, "motor");
+    ml1_req = request_output_line(chip_path, left1_offset, inactive, "motor ml1");
     if (!ml1_req) goto fail;
-    ml2_req = request_output_line(chip_path, left2_offset, inactive, "motor");
+    ml2_req = request_output_line(chip_path, left2_offset, inactive, "motor ml2");
     if (!ml2_req) goto fail;
 
     return 0;
