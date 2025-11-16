@@ -1,0 +1,5 @@
+
+config BR2_PACKAGE_LDD
+	bool "LDD"
+	help
+	  LDD scull and misc-modules package
